@@ -15,7 +15,7 @@ describe('NotesStore', () => {
     expect(note.x).toBe(100)
     expect(note.y).toBe(200)
     expect(note.color).toBe('pink')
-    expect(note.status).toBe('draft')
+    expect(note.status).toBe('inbox')
     expect(useNotesStore.getState().notes.size).toBe(1)
   })
 

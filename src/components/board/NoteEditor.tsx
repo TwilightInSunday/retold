@@ -27,7 +27,7 @@ export function NoteEditor({ initialText, onSave, onCancel }: NoteEditorProps) {
   return (
     <textarea
       ref={textareaRef}
-      className="note-editor"
+      className="note-editor note-editor--bottom-sheet"
       value={text}
       onChange={(e) => setText(e.target.value)}
       onKeyDown={handleKeyDown}

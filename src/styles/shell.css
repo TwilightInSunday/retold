@@ -137,7 +137,7 @@
   font-weight: 600;
 }
 
-.status-bar__status-count--draft { color: #888; }
+.status-bar__status-count--inbox { color: #888; }
 .status-bar__status-count--todo { color: #1d4ed8; }
 .status-bar__status-count--in-progress { color: #b45309; }
 .status-bar__status-count--done { color: #15803d; }

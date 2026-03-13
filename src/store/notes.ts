@@ -22,7 +22,7 @@ export const useNotesStore = create<NotesState>()((set, get) => ({
       id: nanoid(),
       boardId,
       text: '',
-      status: 'draft',
+      status: 'inbox',
       color,
       x,
       y,

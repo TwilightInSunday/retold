@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import type { SyncStatus } from '../../store/sync'
 import type { Note } from '../../api/types'
 
-const STATUSES = ['draft', 'todo', 'in-progress', 'done'] as const;
+const STATUSES = ['inbox', 'todo', 'in-progress', 'done'] as const;
 
 interface StatusBarProps {
   syncStatus: SyncStatus;
@@ -26,7 +26,7 @@ const statusIndicators: Record<SyncStatus, string> = {
 
 export function StatusBar({ syncStatus, notes, boardId }: StatusBarProps) {
   const counts = useMemo(() => {
-    const result: Record<string, number> = { draft: 0, todo: 0, 'in-progress': 0, done: 0 };
+    const result: Record<string, number> = { inbox: 0, todo: 0, 'in-progress': 0, done: 0 };
     for (const note of notes.values()) {
       if (!note.deletedAt && (!boardId || note.boardId === boardId)) {
         result[note.status]++;

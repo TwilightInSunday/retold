@@ -57,7 +57,7 @@ function makeNote(overrides: Record<string, unknown> = {}) {
     id: crypto.randomUUID(),
     boardId: 'b1',
     text: '',
-    status: 'draft',
+    status: 'inbox',
     color: 'yellow',
     x: 0, y: 0, width: 160, rotation: 0,
     createdAt: '', updatedAt: '', deletedAt: null,
@@ -83,7 +83,7 @@ describe('StatusBar', () => {
 
   it('shows zero counts when empty', () => {
     render(<StatusBar syncStatus="idle" notes={emptyNotes} boardId="b1" />)
-    expect(screen.getByText('0 draft')).toBeInTheDocument()
+    expect(screen.getByText('0 inbox')).toBeInTheDocument()
     expect(screen.getByText('0 todo')).toBeInTheDocument()
     expect(screen.getByText('0 in-progress')).toBeInTheDocument()
     expect(screen.getByText('0 done')).toBeInTheDocument()
@@ -91,7 +91,7 @@ describe('StatusBar', () => {
 
   it('counts notes per status for the current board', () => {
     const notes = new Map()
-    const n1 = makeNote({ status: 'draft', boardId: 'b1' })
+    const n1 = makeNote({ status: 'inbox', boardId: 'b1' })
     const n2 = makeNote({ status: 'todo', boardId: 'b1' })
     const n3 = makeNote({ status: 'todo', boardId: 'b1' })
     const n4 = makeNote({ status: 'done', boardId: 'b2' })
@@ -100,19 +100,19 @@ describe('StatusBar', () => {
     notes.set(n3.id, n3)
     notes.set(n4.id, n4)
     render(<StatusBar syncStatus="idle" notes={notes} boardId="b1" />)
-    expect(screen.getByText('1 draft')).toBeInTheDocument()
+    expect(screen.getByText('1 inbox')).toBeInTheDocument()
     expect(screen.getByText('2 todo')).toBeInTheDocument()
     expect(screen.getByText('0 done')).toBeInTheDocument()
   })
 
   it('excludes soft-deleted notes from counts', () => {
     const notes = new Map()
-    const n1 = makeNote({ status: 'draft', boardId: 'b1' })
-    const n2 = makeNote({ status: 'draft', boardId: 'b1', deletedAt: '2026-01-01' })
+    const n1 = makeNote({ status: 'inbox', boardId: 'b1' })
+    const n2 = makeNote({ status: 'inbox', boardId: 'b1', deletedAt: '2026-01-01' })
     notes.set(n1.id, n1)
     notes.set(n2.id, n2)
     render(<StatusBar syncStatus="idle" notes={notes} boardId="b1" />)
-    expect(screen.getByText('1 draft')).toBeInTheDocument()
+    expect(screen.getByText('1 inbox')).toBeInTheDocument()
   })
 
   it('has status role', () => {

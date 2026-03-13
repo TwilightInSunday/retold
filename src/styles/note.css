@@ -57,7 +57,7 @@
   border-color: var(--retro-dark);
 }
 
-.note--draft .note__status-badge {
+.note--inbox .note__status-badge {
   background: rgba(136, 136, 136, 0.2);
   border-color: var(--retro-mid);
   color: var(--retro-dark);
@@ -184,8 +184,24 @@
   }
 }
 
+/* Backdrop for bottom sheet editor */
+.note-editor-backdrop {
+  display: none;
+}
+
 /* Small phone: bottom sheet style note editor */
 @media (max-width: 479px) {
+  .note-editor-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: calc(var(--z-modal) - 1);
+  }
+
   .note-editor--bottom-sheet {
     position: fixed;
     bottom: 0;

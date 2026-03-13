@@ -1,6 +1,22 @@
 import { http, HttpResponse } from 'msw'
 import { db } from './db'
-import type { Note, Board, SyncOperation } from '../api/types'
+import type { Note, Board, Zone, SyncOperation } from '../api/types'
+
+function createDefaultZones(): Zone[] {
+  const statuses: Zone['status'][] = ['inbox', 'todo', 'in-progress', 'done'];
+  const labels = ['Inbox', 'Todo', 'In Progress', 'Done'];
+  const colors = ['#888888', '#3b82f6', '#f59e0b', '#22c55e'];
+  return statuses.map((status, i) => ({
+    id: `zone-${status}`,
+    label: labels[i],
+    status,
+    x: 20 + i * 300,
+    y: 0,
+    width: 280,
+    height: 500,
+    color: colors[i],
+  }));
+}
 
 export const handlers = [
   // Boards
@@ -14,7 +30,7 @@ export const handlers = [
     const board: Board = {
       id: body.id || crypto.randomUUID(),
       name: body.name || 'Untitled',
-      zones: body.zones || [],
+      zones: body.zones || createDefaultZones(),
       createdAt: now,
       updatedAt: now,
     };
@@ -52,7 +68,7 @@ export const handlers = [
       id: body.id || crypto.randomUUID(),
       boardId: params.boardId as string,
       text: body.text || '',
-      status: body.status || 'draft',
+      status: body.status || 'inbox',
       color: body.color || 'yellow',
       x: body.x || 0,
       y: body.y || 0,

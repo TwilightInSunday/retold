@@ -2,7 +2,7 @@ export interface Note {
   id: string;
   boardId: string;
   text: string;
-  status: 'draft' | 'todo' | 'in-progress' | 'done';
+  status: 'inbox' | 'todo' | 'in-progress' | 'done';
   color: 'yellow' | 'pink' | 'blue' | 'green' | 'white';
   x: number;
   y: number;
@@ -24,6 +24,7 @@ export interface Board {
 export interface Zone {
   id: string;
   label: string;
+  status?: Note['status'];
   x: number;
   y: number;
   width: number;

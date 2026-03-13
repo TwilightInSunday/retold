@@ -6,7 +6,7 @@ import { ColorPicker } from '../components/shared/ColorPicker'
 import type { Note } from '../api/types'
 
 const validTransitions: Record<Note['status'], Note['status'][]> = {
-  draft: ['todo'],
+  inbox: ['todo'],
   todo: ['in-progress'],
   'in-progress': ['done', 'todo'],
   done: ['todo'],
@@ -21,8 +21,8 @@ describe('Note status transitions', () => {
     useNotesStore.setState({ notes: new Map() });
   })
 
-  it('draft → todo on first edit', () => {
-    expect(canTransition('draft', 'todo')).toBe(true);
+  it('inbox → todo on first edit', () => {
+    expect(canTransition('inbox', 'todo')).toBe(true);
   })
 
   it('todo → in-progress', () => {
@@ -37,13 +37,13 @@ describe('Note status transitions', () => {
     expect(canTransition('done', 'todo')).toBe(true);
   })
 
-  it('draft cannot go directly to done', () => {
-    expect(canTransition('draft', 'done')).toBe(false);
+  it('inbox cannot go directly to done', () => {
+    expect(canTransition('inbox', 'done')).toBe(false);
   })
 
-  it('store transitions draft to todo on text update', () => {
+  it('store transitions inbox to todo on text update', () => {
     const note = useNotesStore.getState().createNote('b1', 0, 0);
-    expect(note.status).toBe('draft');
+    expect(note.status).toBe('inbox');
 
     useNotesStore.getState().updateNote(note.id, {
       text: 'Hello',

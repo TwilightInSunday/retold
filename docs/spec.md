@@ -134,7 +134,7 @@ export interface Note {
   id: string;                    // nanoid
   boardId: string;
   text: string;
-  status: 'draft' | 'todo' | 'in-progress' | 'done';
+  status: 'inbox' | 'todo' | 'in-progress' | 'done';
   color: 'yellow' | 'pink' | 'blue' | 'green' | 'white';
   x: number;                    // world-space position
   y: number;
@@ -284,7 +284,7 @@ GET    /api/sync/pull?since=<ISO>     → { notes: Note[], boards: Board[] }
 - On reconnect: drain queue with exponential backoff (1s, 2s, 4s, max 30s)
 - Failed operations retry up to 5 times, then mark as `failed`
 - Status bar shows sync state: ● Online — synced / ● Offline / ● Syncing...
-- Status bar shows per-status note counts: draft · todo · in-progress · done
+- Status bar shows per-status note counts: inbox · todo · in-progress · done
 
 ---
 
@@ -385,8 +385,8 @@ Tests live in `src/__tests__/` and use `src/mocks/server.ts` for MSW server-side
 - [x] Whiteboard canvas with pan/zoom
 - [x] Post-it note component with inline editing
 - [x] Gesture engine (touch + mouse)
-- [ ] Swim-lane zones with drag-to-zone
-- [x] Note lifecycle (draft → todo → doing → done)
+- [x] Swim-lane zones with drag-to-zone
+- [x] Note lifecycle (inbox → todo → doing → done)
 - [x] Retro shell (title bar, toolbar, status bar)
 - [x] Sync engine with operation queue
 - [x] Online/offline status + reconnection
@@ -394,4 +394,4 @@ Tests live in `src/__tests__/` and use `src/mocks/server.ts` for MSW server-side
 - [x] PWA manifest + service worker
 - [x] Vitest unit + integration tests
 - [x] Accessibility: keyboard nav, ARIA labels
-- [ ] Bottom sheet note editor (mobile)
+- [x] Bottom sheet note editor (mobile)

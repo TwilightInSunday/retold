@@ -57,7 +57,7 @@ src/
 - **CRUD notes** — create, read, update, and delete post-it notes
 - **Drag-and-drop canvas** — freely position notes on a whiteboard
 - **Pan & zoom** — navigate the board with mouse/touch gestures
-- **Status cycling** — tap to cycle notes through draft → todo → in-progress → done
+- **Status cycling** — tap to cycle notes through inbox → todo → in-progress → done
 - **Per-status counts** — status bar shows counts for each status category
 - **Offline-first sync** — optimistic UI with IndexedDB persistence and background sync
 - **PWA** — installable with service worker asset caching

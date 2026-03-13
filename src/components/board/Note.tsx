@@ -12,7 +12,7 @@ interface NoteProps {
   onDragEnd?: (id: string, e: React.PointerEvent) => void;
 }
 
-const STATUS_CYCLE: NoteType['status'][] = ['draft', 'todo', 'in-progress', 'done']
+const STATUS_CYCLE: NoteType['status'][] = ['inbox', 'todo', 'in-progress', 'done']
 
 const colorMap: Record<NoteType['color'], string> = {
   yellow: 'var(--note-yellow)',
@@ -46,7 +46,7 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
 
   const handleSave = useCallback(
     (text: string) => {
-      onUpdate(note.id, { text, status: note.status === 'draft' ? 'todo' : note.status });
+      onUpdate(note.id, { text, status: note.status === 'inbox' ? 'todo' : note.status });
       setEditing(false);
     },
     [note.id, note.status, onUpdate],
@@ -134,6 +134,12 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
           ×
         </button>
       </div>
+      {editing && (
+        <div
+          className="note-editor-backdrop"
+          onClick={() => noteRef.current?.querySelector('textarea')?.blur()}
+        />
+      )}
       <div className="note__body">
         {editing ? (
           <NoteEditor
