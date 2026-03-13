@@ -33,3 +33,28 @@
 .canvas__world > * {
   pointer-events: auto;
 }
+
+/* Zones */
+.zone {
+  position: absolute;
+  border: var(--border-dashed);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: var(--z-zone);
+  pointer-events: none;
+}
+
+.zone--drop-target {
+  background: rgba(255, 255, 255, 0.6);
+  border-style: solid;
+}
+
+.zone__label {
+  display: block;
+  padding: var(--space-xs) var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--retro-mid);
+}
