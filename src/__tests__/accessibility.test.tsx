@@ -77,7 +77,7 @@ describe('Accessibility', () => {
     })
 
     it('StatusBar has status role with aria-live', () => {
-      render(<StatusBar syncStatus="idle" />)
+      render(<StatusBar syncStatus="idle" notes={new Map()} />)
       const status = screen.getByRole('status')
       expect(status).toHaveAttribute('aria-live', 'polite')
     })

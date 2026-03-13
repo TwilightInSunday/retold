@@ -20,7 +20,7 @@ describe('Responsive layout components', () => {
   })
 
   it('StatusBar renders as thin strip', () => {
-    render(<StatusBar syncStatus="idle" />)
+    render(<StatusBar syncStatus="idle" notes={new Map()} />)
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 

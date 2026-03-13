@@ -50,34 +50,73 @@ describe('Toolbar', () => {
   })
 })
 
+const emptyNotes = new Map()
+
+function makeNote(overrides: Record<string, unknown> = {}) {
+  return {
+    id: crypto.randomUUID(),
+    boardId: 'b1',
+    text: '',
+    status: 'draft',
+    color: 'yellow',
+    x: 0, y: 0, width: 160, rotation: 0,
+    createdAt: '', updatedAt: '', deletedAt: null,
+    ...overrides,
+  }
+}
+
 describe('StatusBar', () => {
   it('shows online status', () => {
-    render(<StatusBar syncStatus="idle" />)
+    render(<StatusBar syncStatus="idle" notes={emptyNotes} />)
     expect(screen.getByText('Online — synced')).toBeInTheDocument()
   })
 
   it('shows offline status', () => {
-    render(<StatusBar syncStatus="offline" />)
+    render(<StatusBar syncStatus="offline" notes={emptyNotes} />)
     expect(screen.getByText('Offline')).toBeInTheDocument()
   })
 
   it('shows syncing status', () => {
-    render(<StatusBar syncStatus="syncing" />)
+    render(<StatusBar syncStatus="syncing" notes={emptyNotes} />)
     expect(screen.getByText('Syncing...')).toBeInTheDocument()
   })
 
-  it('shows note count', () => {
-    render(<StatusBar syncStatus="idle" noteCount={5} />)
-    expect(screen.getByText('5 notes')).toBeInTheDocument()
+  it('shows zero counts when empty', () => {
+    render(<StatusBar syncStatus="idle" notes={emptyNotes} boardId="b1" />)
+    expect(screen.getByText('0 draft')).toBeInTheDocument()
+    expect(screen.getByText('0 todo')).toBeInTheDocument()
+    expect(screen.getByText('0 in-progress')).toBeInTheDocument()
+    expect(screen.getByText('0 done')).toBeInTheDocument()
   })
 
-  it('shows singular note', () => {
-    render(<StatusBar syncStatus="idle" noteCount={1} />)
-    expect(screen.getByText('1 note')).toBeInTheDocument()
+  it('counts notes per status for the current board', () => {
+    const notes = new Map()
+    const n1 = makeNote({ status: 'draft', boardId: 'b1' })
+    const n2 = makeNote({ status: 'todo', boardId: 'b1' })
+    const n3 = makeNote({ status: 'todo', boardId: 'b1' })
+    const n4 = makeNote({ status: 'done', boardId: 'b2' })
+    notes.set(n1.id, n1)
+    notes.set(n2.id, n2)
+    notes.set(n3.id, n3)
+    notes.set(n4.id, n4)
+    render(<StatusBar syncStatus="idle" notes={notes} boardId="b1" />)
+    expect(screen.getByText('1 draft')).toBeInTheDocument()
+    expect(screen.getByText('2 todo')).toBeInTheDocument()
+    expect(screen.getByText('0 done')).toBeInTheDocument()
+  })
+
+  it('excludes soft-deleted notes from counts', () => {
+    const notes = new Map()
+    const n1 = makeNote({ status: 'draft', boardId: 'b1' })
+    const n2 = makeNote({ status: 'draft', boardId: 'b1', deletedAt: '2026-01-01' })
+    notes.set(n1.id, n1)
+    notes.set(n2.id, n2)
+    render(<StatusBar syncStatus="idle" notes={notes} boardId="b1" />)
+    expect(screen.getByText('1 draft')).toBeInTheDocument()
   })
 
   it('has status role', () => {
-    render(<StatusBar syncStatus="idle" />)
+    render(<StatusBar syncStatus="idle" notes={emptyNotes} />)
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 })

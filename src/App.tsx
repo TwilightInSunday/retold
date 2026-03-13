@@ -18,7 +18,7 @@ import './styles/board.css'
 function App() {
   const syncStatus = useSyncStore((s) => s.status)
   const notes = useNotesStore((s) => s.notes)
-  const noteCount = useNotesStore((s) => s.notes.size)
+
   const currentBoard = useBoardStore((s) => s.currentBoard)
   const resetViewport = useBoardStore((s) => s.resetViewport)
   const panX = useBoardStore((s) => s.panX)
@@ -124,7 +124,7 @@ function App() {
           />
         ))}
       </Canvas>
-      <StatusBar syncStatus={syncStatus} noteCount={noteCount} />
+      <StatusBar syncStatus={syncStatus} notes={notes} boardId={currentBoard?.id} />
     </div>
   )
 }

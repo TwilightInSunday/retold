@@ -1,8 +1,13 @@
+import { useMemo } from 'react'
 import type { SyncStatus } from '../../store/sync'
+import type { Note } from '../../api/types'
+
+const STATUSES = ['draft', 'todo', 'in-progress', 'done'] as const;
 
 interface StatusBarProps {
   syncStatus: SyncStatus;
-  noteCount?: number;
+  notes: Map<string, Note>;
+  boardId?: string;
 }
 
 const statusLabels: Record<SyncStatus, string> = {
@@ -19,7 +24,17 @@ const statusIndicators: Record<SyncStatus, string> = {
   error: 'status-bar__indicator--error',
 };
 
-export function StatusBar({ syncStatus, noteCount = 0 }: StatusBarProps) {
+export function StatusBar({ syncStatus, notes, boardId }: StatusBarProps) {
+  const counts = useMemo(() => {
+    const result: Record<string, number> = { draft: 0, todo: 0, 'in-progress': 0, done: 0 };
+    for (const note of notes.values()) {
+      if (!note.deletedAt && (!boardId || note.boardId === boardId)) {
+        result[note.status]++;
+      }
+    }
+    return result;
+  }, [notes, boardId]);
+
   return (
     <div className="status-bar" role="status" aria-live="polite">
       <div className="status-bar__left">
@@ -30,7 +45,14 @@ export function StatusBar({ syncStatus, noteCount = 0 }: StatusBarProps) {
         <span className="status-bar__label">{statusLabels[syncStatus]}</span>
       </div>
       <div className="status-bar__right">
-        <span className="status-bar__count">{noteCount} note{noteCount !== 1 ? 's' : ''}</span>
+        {STATUSES.map((status, i) => (
+          <span key={status}>
+            <span className={`status-bar__status-count status-bar__status-count--${status}`}>
+              {counts[status]} {status}
+            </span>
+            {i < STATUSES.length - 1 && <span className="status-bar__separator"> · </span>}
+          </span>
+        ))}
       </div>
     </div>
   );

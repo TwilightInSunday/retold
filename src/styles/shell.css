@@ -133,6 +133,19 @@
   50% { opacity: 0.4; }
 }
 
+.status-bar__status-count {
+  font-weight: 600;
+}
+
+.status-bar__status-count--draft { color: #888; }
+.status-bar__status-count--todo { color: #1d4ed8; }
+.status-bar__status-count--in-progress { color: #b45309; }
+.status-bar__status-count--done { color: #15803d; }
+
+.status-bar__separator {
+  color: var(--retro-mid);
+}
+
 /* Tablet */
 @media (max-width: 1023px) and (min-width: 768px) {
   .toolbar__btn {
