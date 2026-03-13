@@ -5,8 +5,12 @@ import App from './App.tsx'
 
 async function boot() {
   if (import.meta.env.DEV) {
-    const { worker } = await import('./mocks/browser')
-    await worker.start({ onUnhandledRequest: 'bypass' })
+    try {
+      const { worker } = await import('./mocks/browser')
+      await worker.start({ onUnhandledRequest: 'bypass' })
+    } catch (e) {
+      console.warn('MSW failed to start:', e)
+    }
   }
 
   createRoot(document.getElementById('root')!).render(
