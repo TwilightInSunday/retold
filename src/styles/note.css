@@ -136,3 +136,89 @@
   transform: scale(0.95);
   box-shadow: 1px 1px 0 var(--retro-dark);
 }
+
+/* Mobile: always show delete button for touch */
+@media (max-width: 767px) {
+  .note__delete {
+    opacity: 1;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .create-button {
+    bottom: 28px;
+    right: var(--space-md);
+  }
+}
+
+/* Small phone: bottom sheet style note editor */
+@media (max-width: 479px) {
+  .note-editor--bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-modal);
+    background: var(--retro-white);
+    border-top: var(--border-thick);
+    padding: var(--space-md);
+    min-height: 200px;
+    max-height: 50vh;
+  }
+}
+
+/* Color picker and checkbox responsive */
+.color-picker {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.color-picker__swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: var(--border-thin);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+
+.color-picker__swatch--active {
+  border: var(--border-thick);
+  box-shadow: 0 0 0 2px var(--retro-white), 0 0 0 4px var(--retro-black);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.checkbox__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox__box {
+  width: 20px;
+  height: 20px;
+  border: var(--border-thick);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--retro-white);
+}
+
+.checkbox__label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
