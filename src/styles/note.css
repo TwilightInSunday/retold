@@ -1,0 +1,138 @@
+/* Post-it Note */
+.note {
+  position: absolute;
+  min-height: 120px;
+  padding: var(--space-sm);
+  border: var(--border-thick);
+  box-shadow: 3px 3px 0 var(--retro-dark);
+  cursor: grab;
+  user-select: none;
+  z-index: var(--z-note);
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+  touch-action: none;
+}
+
+.note:focus {
+  outline: 3px solid var(--retro-dark);
+  outline-offset: 2px;
+}
+
+.note:active {
+  cursor: grabbing;
+  z-index: var(--z-note-dragging);
+  box-shadow: 6px 6px 0 var(--retro-dark);
+}
+
+.note--done {
+  opacity: 0.6;
+}
+
+.note--done .note__text {
+  text-decoration: line-through;
+}
+
+/* Note header */
+.note__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.note__status-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1px 6px;
+  border: 1px solid var(--retro-mid);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.note__delete {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: var(--border-thin);
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.note:hover .note__delete,
+.note:focus-within .note__delete {
+  opacity: 1;
+}
+
+.note__delete:hover {
+  background: var(--retro-light);
+}
+
+/* Note body */
+.note__body {
+  flex: 1;
+}
+
+.note__text {
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  color: var(--retro-black);
+}
+
+.note__text:empty::before {
+  content: 'Double-click to edit';
+  color: var(--retro-mid);
+  font-style: italic;
+}
+
+/* Note Editor */
+.note-editor {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+  resize: none;
+  outline: none;
+  color: var(--retro-black);
+}
+
+/* Create Button (FAB) */
+.create-button {
+  position: fixed;
+  bottom: 40px;
+  right: var(--space-lg);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: var(--border-thick);
+  background: var(--note-yellow);
+  font-size: 28px;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 3px 0 var(--retro-dark);
+  z-index: var(--z-toolbar);
+  transition: transform 0.1s;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.create-button:hover {
+  transform: scale(1.05);
+}
+
+.create-button:active {
+  transform: scale(0.95);
+  box-shadow: 1px 1px 0 var(--retro-dark);
+}
