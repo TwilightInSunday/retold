@@ -49,6 +49,36 @@
   padding: 1px 6px;
   border: 1px solid var(--retro-mid);
   background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.note__status-badge:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--retro-dark);
+}
+
+.note--draft .note__status-badge {
+  background: rgba(136, 136, 136, 0.2);
+  border-color: var(--retro-mid);
+  color: var(--retro-dark);
+}
+
+.note--todo .note__status-badge {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.note--in-progress .note__status-badge {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+.note--done .note__status-badge {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: #22c55e;
+  color: #15803d;
 }
 
 .note__delete {
