@@ -18,26 +18,30 @@ A spatial todo app with a whiteboard/post-it UX, offline-first architecture, ret
 | Persistence    | IndexedDB (via idb) | Offline storage, large capacity          |
 | Mock API       | MSW 2.x             | Service worker intercept, real fetch()   |
 | Testing        | Vitest               | Bun-compatible, fast, jest-compatible API|
-| Offline cache  | Workbox              | Service worker for asset caching (PWA)   |
+| Offline cache  | vite-plugin-pwa      | Service worker for asset caching (PWA)   |
 
 ---
 
 ## Project Structure
 
 ```
-retro-do/
+retold/
 ├── index.html
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
 ├── vitest.config.ts
 ├── public/
-│   └── manifest.json          # PWA manifest
+│   ├── manifest.json          # PWA manifest
+│   ├── favicon.svg
+│   ├── icons.svg              # App icons
+│   └── mockServiceWorker.js   # MSW service worker
 │
 ├── src/
 │   ├── main.tsx                # Entry point, MSW init
 │   ├── App.tsx                 # Root: shell + canvas
 │   ├── App.css                 # Global reset + CSS variables
+│   ├── test-setup.ts           # Test environment setup
 │   │
 │   ├── api/                    # API layer (contract-first)
 │   │   ├── types.ts            # Shared types: Note, Board, SyncOp
@@ -46,6 +50,7 @@ retro-do/
 │   │
 │   ├── mocks/                  # MSW setup
 │   │   ├── browser.ts          # setupWorker()
+│   │   ├── server.ts           # setupServer() for tests
 │   │   ├── handlers.ts         # REST handlers matching api/types
 │   │   └── db.ts               # In-memory mock database
 │   │
@@ -63,7 +68,7 @@ retro-do/
 │   ├── sync/                   # Sync engine
 │   │   ├── queue.ts            # Operation queue (enqueue, drain)
 │   │   ├── engine.ts           # Online/offline detect, retry
-│   │   └── conflict.ts         # Last-write-wins per field
+│   │   └── conflict.ts         # Last-write-wins (whole-entity)
 │   │
 │   ├── components/
 │   │   ├── shell/              # Retro window chrome
@@ -87,22 +92,35 @@ retro-do/
 │   │   ├── useOnlineStatus.ts  # Navigator.onLine + events
 │   │   └── useViewport.ts      # Transform matrix management
 │   │
-│   └── styles/
-│       ├── tokens.css           # CSS custom properties (retro theme)
-│       ├── shell.css            # Title bar, toolbar, status bar
-│       ├── board.css            # Canvas, zones, dot grid
-│       └── note.css             # Post-it note styles
+│   ├── styles/
+│   │   ├── tokens.css           # CSS custom properties (retro theme)
+│   │   ├── shell.css            # Title bar, toolbar, status bar
+│   │   ├── board.css            # Canvas, zones, dot grid
+│   │   └── note.css             # Post-it note styles
+│   │
+│   └── __tests__/              # All test files
+│       ├── accessibility.test.tsx
+│       ├── app.test.tsx
+│       ├── canvas.test.tsx
+│       ├── client.test.ts
+│       ├── db.test.ts
+│       ├── gestures.test.ts
+│       ├── lifecycle.test.tsx
+│       ├── mock-api.test.ts
+│       ├── note.test.tsx
+│       ├── online-status.test.ts
+│       ├── pwa.test.ts
+│       ├── responsive.test.tsx
+│       ├── shell.test.tsx
+│       ├── stores.test.ts
+│       ├── sync.test.ts
+│       ├── tokens.test.ts
+│       ├── viewport.test.ts
+│       └── zone.test.tsx
 │
-└── tests/
-    ├── store/
-    │   └── notes.test.ts
-    ├── sync/
-    │   ├── queue.test.ts
-    │   └── engine.test.ts
-    ├── hooks/
-    │   └── useGestures.test.ts
-    └── integration/
-        └── crud-flow.test.ts    # MSW + store round-trips
+└── docs/
+    ├── README.md
+    └── spec.md                  # This file
 ```
 
 ---
@@ -252,20 +270,21 @@ GET    /api/sync/pull?since=<ISO>     → { notes: Note[], boards: Board[] }
 1. Open IndexedDB → hydrate Zustand store
 2. Render immediately from local data
 3. In background: `GET /api/sync/pull?since=lastSyncTimestamp`
-4. Merge server data with local (LWW per field)
+4. Merge server data with local (LWW whole-entity)
 5. Update store + IndexedDB with merged result
 
 ### Conflict Resolution
-- **Last-write-wins per field** using `updatedAt` timestamps
-- Example: Phone edits `text` at T1, Desktop moves `x,y` at T2
-  - Server sees: text from T1, position from T2 — both win
+- **Last-write-wins (whole-entity)** using `updatedAt` timestamps
+- The entity with the later `updatedAt` wins entirely
 - Soft deletes (`deletedAt`) prevent data loss
+- Note: a true per-field LWW approach would require per-field timestamps, which the current schema doesn't support
 
 ### Reconnection
 - Listen to `navigator.onLine` + `window.addEventListener('online')`
 - On reconnect: drain queue with exponential backoff (1s, 2s, 4s, max 30s)
 - Failed operations retry up to 5 times, then mark as `failed`
 - Status bar shows sync state: ● Online — synced / ● Offline / ● Syncing...
+- Status bar shows per-status note counts: draft · todo · in-progress · done
 
 ---
 
@@ -324,7 +343,7 @@ panning
 
 Key mobile adaptations:
 - Toolbar collapses into a hamburger menu
-- Status bar becomes a thin indicator strip  
+- Status bar becomes a thin indicator strip
 - Note editor opens as a bottom sheet (not inline)
 - Zones stack vertically when viewport is narrow
 - Touch targets minimum 44×44px everywhere
@@ -352,24 +371,27 @@ Manual testing:
   └── Cross-browser: Safari, Chrome, Firefox mobile
 ```
 
+Tests live in `src/__tests__/` and use `src/mocks/server.ts` for MSW server-side setup.
+
 ---
 
 ## Deliverable Checklist
 
-- [ ] Bun + Vite + React project scaffold
-- [ ] CSS design tokens (retro theme)
-- [ ] MSW handlers with in-memory DB
-- [ ] IndexedDB schema + persistence layer
-- [ ] Zustand stores (notes, board, sync)
-- [ ] Whiteboard canvas with pan/zoom
-- [ ] Post-it note component with inline editing
-- [ ] Gesture engine (touch + mouse)
+- [x] Bun + Vite + React project scaffold
+- [x] CSS design tokens (retro theme)
+- [x] MSW handlers with in-memory DB
+- [x] IndexedDB schema + persistence layer
+- [x] Zustand stores (notes, board, sync)
+- [x] Whiteboard canvas with pan/zoom
+- [x] Post-it note component with inline editing
+- [x] Gesture engine (touch + mouse)
 - [ ] Swim-lane zones with drag-to-zone
-- [ ] Note lifecycle (draft → todo → doing → done)
-- [ ] Retro shell (title bar, toolbar, status bar)
-- [ ] Sync engine with operation queue
-- [ ] Online/offline status + reconnection
-- [ ] Mobile responsive layout
-- [ ] PWA manifest + service worker
-- [ ] Vitest unit + integration tests
-- [ ] Accessibility: keyboard nav, ARIA labels
+- [x] Note lifecycle (draft → todo → doing → done)
+- [x] Retro shell (title bar, toolbar, status bar)
+- [x] Sync engine with operation queue
+- [x] Online/offline status + reconnection
+- [x] Mobile responsive layout
+- [x] PWA manifest + service worker
+- [x] Vitest unit + integration tests
+- [x] Accessibility: keyboard nav, ARIA labels
+- [ ] Bottom sheet note editor (mobile)
