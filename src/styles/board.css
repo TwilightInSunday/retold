@@ -1,0 +1,35 @@
+/* Canvas container */
+.canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--retro-cream);
+  background-image: radial-gradient(
+    circle,
+    var(--board-dot-color) var(--board-dot-size),
+    transparent var(--board-dot-size)
+  );
+  background-size: var(--board-dot-gap) var(--board-dot-gap);
+  cursor: grab;
+  touch-action: none;
+  z-index: var(--z-board);
+}
+
+.canvas:active {
+  cursor: grabbing;
+}
+
+/* World transform layer */
+.canvas__world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.canvas__world > * {
+  pointer-events: auto;
+}
