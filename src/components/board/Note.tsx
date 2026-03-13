@@ -28,6 +28,20 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
     setEditing(true);
   }, []);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (editing) return;
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        setEditing(true);
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        onDelete(note.id);
+      }
+    },
+    [editing, note.id, onDelete],
+  );
+
   const handleSave = useCallback(
     (text: string) => {
       onUpdate(note.id, { text, status: note.status === 'draft' ? 'todo' : note.status });
@@ -38,6 +52,8 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
 
   const handleCancel = useCallback(() => {
     setEditing(false);
+    // Return focus to the note container
+    noteRef.current?.focus();
   }, []);
 
   const handlePointerDown = useCallback(
@@ -78,11 +94,13 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
         transform: `rotate(${note.rotation}deg)`,
       }}
       onDoubleClick={handleDoubleClick}
+      onKeyDown={handleKeyDown}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       role="article"
-      aria-label={`Note: ${note.text || 'empty'}`}
+      aria-label={`Note: ${note.text || 'empty'}, status: ${note.status}, color: ${note.color}`}
+      aria-roledescription="draggable note"
       tabIndex={0}
       data-note-id={note.id}
     >
