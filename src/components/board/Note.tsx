@@ -12,6 +12,8 @@ interface NoteProps {
   onDragEnd?: (id: string, e: React.PointerEvent) => void;
 }
 
+const STATUS_CYCLE: NoteType['status'][] = ['draft', 'todo', 'in-progress', 'done']
+
 const colorMap: Record<NoteType['color'], string> = {
   yellow: 'var(--note-yellow)',
   pink: 'var(--note-pink)',
@@ -56,9 +58,16 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
     noteRef.current?.focus();
   }, []);
 
+  const handleStatusCycle = useCallback(() => {
+    const currentIndex = STATUS_CYCLE.indexOf(note.status);
+    const nextStatus = STATUS_CYCLE[(currentIndex + 1) % STATUS_CYCLE.length];
+    onUpdate(note.id, { status: nextStatus });
+  }, [note.id, note.status, onUpdate]);
+
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (editing) return;
+      e.stopPropagation();
       onDragStart?.(note.id, e);
     },
     [editing, note.id, onDragStart],
@@ -67,6 +76,7 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
       if (editing) return;
+      e.stopPropagation();
       onDragMove?.(note.id, e);
     },
     [editing, note.id, onDragMove],
@@ -75,6 +85,7 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
       if (editing) return;
+      e.stopPropagation();
       onDragEnd?.(note.id, e);
     },
     [editing, note.id, onDragEnd],
@@ -105,7 +116,13 @@ export function Note({ note, onUpdate, onDelete, onDragStart, onDragMove, onDrag
       data-note-id={note.id}
     >
       <div className="note__header">
-        <span className="note__status-badge">{note.status}</span>
+        <button
+          className="note__status-badge"
+          onClick={(e) => { e.stopPropagation(); handleStatusCycle(); }}
+          aria-label={`Status: ${note.status}. Click to change.`}
+        >
+          {note.status}
+        </button>
         <button
           className="note__delete"
           onClick={(e) => {

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { TitleBar } from './components/shell/TitleBar'
 import { Toolbar } from './components/shell/Toolbar'
 import { StatusBar } from './components/shell/StatusBar'
@@ -49,11 +49,41 @@ function App() {
     init()
   }, [])
 
+  // Drag state
+  const dragging = useRef<{ id: string; startX: number; startY: number; noteX: number; noteY: number } | null>(null)
+
+  const handleDragStart = useCallback((id: string, e: React.PointerEvent) => {
+    const note = useNotesStore.getState().getNote(id)
+    if (!note) return
+    dragging.current = { id, startX: e.clientX, startY: e.clientY, noteX: note.x, noteY: note.y }
+    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+    e.stopPropagation()
+  }, [])
+
+  const handleDragMove = useCallback((id: string, e: React.PointerEvent) => {
+    if (!dragging.current || dragging.current.id !== id) return
+    e.stopPropagation()
+    const zoom = useBoardStore.getState().zoom
+    const dx = (e.clientX - dragging.current.startX) / zoom
+    const dy = (e.clientY - dragging.current.startY) / zoom
+    useNotesStore.getState().moveNote(id, dragging.current.noteX + dx, dragging.current.noteY + dy)
+  }, [])
+
+  const handleDragEnd = useCallback((id: string, e: React.PointerEvent) => {
+    if (!dragging.current || dragging.current.id !== id) return
+    e.stopPropagation()
+    const note = useNotesStore.getState().getNote(id)
+    if (note) enqueueOperation('UPDATE', 'note', id, { x: note.x, y: note.y })
+    dragging.current = null
+  }, [])
+
   // Create note handler
   const handleNewNote = useCallback(() => {
     if (!currentBoard) return
-    const x = -panX + window.innerWidth / 2 - 80
-    const y = -panY + window.innerHeight / 2 - 60
+    const offsetX = (Math.random() - 0.5) * 200
+    const offsetY = (Math.random() - 0.5) * 200
+    const x = -panX + window.innerWidth / 2 - 80 + offsetX
+    const y = -panY + window.innerHeight / 2 - 60 + offsetY
     const note = useNotesStore.getState().createNote(currentBoard.id, x, y)
     enqueueOperation('CREATE', 'note', note.id, note)
   }, [currentBoard, panX, panY])
@@ -88,6 +118,9 @@ function App() {
             note={note}
             onUpdate={handleUpdateNote}
             onDelete={handleDeleteNote}
+            onDragStart={handleDragStart}
+            onDragMove={handleDragMove}
+            onDragEnd={handleDragEnd}
           />
         ))}
       </Canvas>
