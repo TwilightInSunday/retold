@@ -1,0 +1,10 @@
+{
+  "name": "RETRO.DO",
+  "short_name": "RETRO.DO",
+  "description": "A spatial todo app with whiteboard/post-it UX",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "icons": []
+}
