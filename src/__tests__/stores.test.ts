@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { useNotesStore } from '../store/notes'
-import { useBoardStore } from '../store/board'
-import { useSyncStore } from '../store/sync'
+import { beforeEach, describe, expect, it } from 'vitest'
 import type { Board } from '../api/types'
+import { useBoardStore } from '../store/board'
+import { useNotesStore } from '../store/notes'
+import { useSyncStore } from '../store/sync'
 
 describe('NotesStore', () => {
   beforeEach(() => {
-    useNotesStore.setState({ notes: new Map() });
+    useNotesStore.setState({ notes: new Map() })
   })
 
   it('creates a note', () => {
@@ -55,7 +55,20 @@ describe('NotesStore', () => {
   it('setNotes replaces all notes', () => {
     useNotesStore.getState().createNote('b1', 0, 0)
     useNotesStore.getState().setNotes([
-      { id: 'x1', boardId: 'b1', text: 'A', status: 'todo', color: 'yellow', x: 0, y: 0, width: 160, rotation: 0, createdAt: '', updatedAt: '', deletedAt: null },
+      {
+        id: 'x1',
+        boardId: 'b1',
+        text: 'A',
+        status: 'todo',
+        color: 'yellow',
+        x: 0,
+        y: 0,
+        width: 160,
+        rotation: 0,
+        createdAt: '',
+        updatedAt: '',
+        deletedAt: null,
+      },
     ])
     expect(useNotesStore.getState().notes.size).toBe(1)
     expect(useNotesStore.getState().getNote('x1')?.text).toBe('A')
@@ -64,7 +77,7 @@ describe('NotesStore', () => {
 
 describe('BoardStore', () => {
   beforeEach(() => {
-    useBoardStore.setState({ panX: 0, panY: 0, zoom: 1, currentBoard: null, boards: new Map() });
+    useBoardStore.setState({ panX: 0, panY: 0, zoom: 1, currentBoard: null, boards: new Map() })
   })
 
   it('sets pan', () => {
@@ -107,7 +120,7 @@ describe('BoardStore', () => {
 
 describe('SyncStore', () => {
   beforeEach(() => {
-    useSyncStore.setState({ queue: [], status: 'idle', lastSyncedAt: null });
+    useSyncStore.setState({ queue: [], status: 'idle', lastSyncedAt: null })
   })
 
   it('enqueues an operation', () => {
@@ -162,7 +175,9 @@ describe('SyncStore', () => {
 
   it('getPending returns only pending ops', () => {
     useSyncStore.getState().enqueue({ type: 'CREATE', entity: 'note', entityId: 'n1', payload: {} })
-    const op2 = useSyncStore.getState().enqueue({ type: 'UPDATE', entity: 'note', entityId: 'n2', payload: {} })
+    const op2 = useSyncStore
+      .getState()
+      .enqueue({ type: 'UPDATE', entity: 'note', entityId: 'n2', payload: {} })
     useSyncStore.getState().markSynced(op2.id)
 
     const pending = useSyncStore.getState().getPending()
@@ -170,7 +185,9 @@ describe('SyncStore', () => {
   })
 
   it('clearSynced removes synced ops', () => {
-    const op1 = useSyncStore.getState().enqueue({ type: 'CREATE', entity: 'note', entityId: 'n1', payload: {} })
+    const op1 = useSyncStore
+      .getState()
+      .enqueue({ type: 'CREATE', entity: 'note', entityId: 'n1', payload: {} })
     useSyncStore.getState().enqueue({ type: 'UPDATE', entity: 'note', entityId: 'n2', payload: {} })
     useSyncStore.getState().markSynced(op1.id)
     useSyncStore.getState().clearSynced()

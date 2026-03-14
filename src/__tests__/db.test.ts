@@ -1,12 +1,23 @@
 import 'fake-indexeddb/auto'
-import { describe, it, expect, beforeEach } from 'vitest'
-import { resetDBPromise, getDB } from '../db/schema'
+import { beforeEach, describe, expect, it } from 'vitest'
+import type { Board, Note, SyncOperation } from '../api/types'
 import {
-  putNote, getNote, getNotesByBoard, deleteNote, getAllNotes,
-  putBoard, getBoard, getAllBoards, deleteBoard,
-  putSyncOp, getSyncOp, getPendingSyncOps, deleteSyncOp, clearSyncOps,
+  clearSyncOps,
+  deleteBoard,
+  deleteNote,
+  deleteSyncOp,
+  getAllBoards,
+  getAllNotes,
+  getBoard,
+  getNote,
+  getNotesByBoard,
+  getPendingSyncOps,
+  getSyncOp,
+  putBoard,
+  putNote,
+  putSyncOp,
 } from '../db/operations'
-import type { Note, Board, SyncOperation } from '../api/types'
+import { getDB, resetDBPromise } from '../db/schema'
 
 beforeEach(async () => {
   // Clear all stores between tests
@@ -28,7 +39,8 @@ function makeNote(overrides: Partial<Note> = {}): Note {
     text: 'Test',
     status: 'todo',
     color: 'yellow',
-    x: 0, y: 0,
+    x: 0,
+    y: 0,
     width: 160,
     rotation: 0,
     createdAt: '2024-01-01T00:00:00Z',

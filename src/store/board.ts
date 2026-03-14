@@ -3,23 +3,23 @@ import type { Board } from '../api/types'
 
 export interface BoardState {
   // Viewport
-  panX: number;
-  panY: number;
-  zoom: number;
+  panX: number
+  panY: number
+  zoom: number
 
   // Current board
-  currentBoard: Board | null;
-  boards: Map<string, Board>;
+  currentBoard: Board | null
+  boards: Map<string, Board>
 
   // Viewport actions
-  setPan: (x: number, y: number) => void;
-  setZoom: (zoom: number) => void;
-  resetViewport: () => void;
+  setPan: (x: number, y: number) => void
+  setZoom: (zoom: number) => void
+  resetViewport: () => void
 
   // Board actions
-  setCurrentBoard: (board: Board) => void;
-  setBoards: (boards: Board[]) => void;
-  updateBoard: (id: string, updates: Partial<Board>) => void;
+  setCurrentBoard: (board: Board) => void
+  setBoards: (boards: Board[]) => void
+  updateBoard: (id: string, updates: Partial<Board>) => void
 }
 
 export const useBoardStore = create<BoardState>()((set, get) => ({
@@ -38,27 +38,27 @@ export const useBoardStore = create<BoardState>()((set, get) => ({
   setCurrentBoard: (board) => set({ currentBoard: board }),
 
   setBoards: (boardsList) => {
-    const boards = new Map<string, Board>();
+    const boards = new Map<string, Board>()
     for (const board of boardsList) {
-      boards.set(board.id, board);
+      boards.set(board.id, board)
     }
-    set({ boards });
+    set({ boards })
     if (!get().currentBoard && boardsList.length > 0) {
-      set({ currentBoard: boardsList[0] });
+      set({ currentBoard: boardsList[0] })
     }
   },
 
   updateBoard: (id, updates) => {
     set((state) => {
-      const board = state.boards.get(id);
-      if (!board) return state;
-      const updated = { ...board, ...updates, updatedAt: new Date().toISOString() };
-      const boards = new Map(state.boards);
-      boards.set(id, updated);
+      const board = state.boards.get(id)
+      if (!board) return state
+      const updated = { ...board, ...updates, updatedAt: new Date().toISOString() }
+      const boards = new Map(state.boards)
+      boards.set(id, updated)
       return {
         boards,
         currentBoard: state.currentBoard?.id === id ? updated : state.currentBoard,
-      };
-    });
+      }
+    })
   },
-}));
+}))

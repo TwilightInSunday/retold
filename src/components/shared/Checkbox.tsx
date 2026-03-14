@@ -1,7 +1,7 @@
 interface CheckboxProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  label: string;
+  checked: boolean
+  onChange: (checked: boolean) => void
+  label: string
 }
 
 export function Checkbox({ checked, onChange, label }: CheckboxProps) {
@@ -19,5 +19,5 @@ export function Checkbox({ checked, onChange, label }: CheckboxProps) {
       </span>
       <span className="checkbox__label">{label}</span>
     </label>
-  );
+  )
 }

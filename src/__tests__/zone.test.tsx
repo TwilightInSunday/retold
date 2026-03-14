@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
-import { Zone, isPointInZone, findOverlappingZone, snapToZone } from '../components/board/Zone'
+import { describe, expect, it } from 'vitest'
 import type { Zone as ZoneType } from '../api/types'
+import { findOverlappingZone, isPointInZone, snapToZone, Zone } from '../components/board/Zone'
 
 const testZone: ZoneType = {
   id: 'z1',

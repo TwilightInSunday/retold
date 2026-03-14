@@ -23,9 +23,15 @@
   border: var(--border-thin);
 }
 
-.title-bar__dot--close { background: #ff5f57; }
-.title-bar__dot--minimize { background: #ffbd2e; }
-.title-bar__dot--maximize { background: #28c840; }
+.title-bar__dot--close {
+  background: #ff5f57;
+}
+.title-bar__dot--minimize {
+  background: #ffbd2e;
+}
+.title-bar__dot--maximize {
+  background: #28c840;
+}
 
 .title-bar__title {
   flex: 1;
@@ -123,24 +129,46 @@
   border-radius: 50%;
 }
 
-.status-bar__indicator--online { background: #28c840; }
-.status-bar__indicator--syncing { background: #ffbd2e; animation: pulse 1s infinite; }
-.status-bar__indicator--offline { background: var(--retro-mid); }
-.status-bar__indicator--error { background: #ff5f57; }
+.status-bar__indicator--online {
+  background: #28c840;
+}
+.status-bar__indicator--syncing {
+  background: #ffbd2e;
+  animation: pulse 1s infinite;
+}
+.status-bar__indicator--offline {
+  background: var(--retro-mid);
+}
+.status-bar__indicator--error {
+  background: #ff5f57;
+}
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .status-bar__status-count {
   font-weight: 600;
 }
 
-.status-bar__status-count--inbox { color: #888; }
-.status-bar__status-count--todo { color: #1d4ed8; }
-.status-bar__status-count--in-progress { color: #b45309; }
-.status-bar__status-count--done { color: #15803d; }
+.status-bar__status-count--inbox {
+  color: #888;
+}
+.status-bar__status-count--todo {
+  color: #1d4ed8;
+}
+.status-bar__status-count--in-progress {
+  color: #b45309;
+}
+.status-bar__status-count--done {
+  color: #15803d;
+}
 
 .status-bar__separator {
   color: var(--retro-mid);

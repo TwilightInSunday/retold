@@ -1,28 +1,28 @@
-import { useState, useRef, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface NoteEditorProps {
-  initialText: string;
-  onSave: (text: string) => void;
-  onCancel: () => void;
+  initialText: string
+  onSave: (text: string) => void
+  onCancel: () => void
 }
 
 export function NoteEditor({ initialText, onSave, onCancel }: NoteEditorProps) {
-  const [text, setText] = useState(initialText);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [text, setText] = useState(initialText)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    textareaRef.current?.focus();
-    textareaRef.current?.select();
-  }, []);
+    textareaRef.current?.focus()
+    textareaRef.current?.select()
+  }, [])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      onSave(text);
+      e.preventDefault()
+      onSave(text)
     } else if (e.key === 'Escape') {
-      onCancel();
+      onCancel()
     }
-  };
+  }
 
   return (
     <textarea
@@ -35,5 +35,5 @@ export function NoteEditor({ initialText, onSave, onCancel }: NoteEditorProps) {
       aria-label="Edit note text"
       rows={4}
     />
-  );
+  )
 }

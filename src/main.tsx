@@ -13,7 +13,7 @@ async function boot() {
     }
   }
 
-  createRoot(document.getElementById('root')!).render(
+  createRoot(document.getElementById('root') as HTMLElement).render(
     <StrictMode>
       <App />
     </StrictMode>,

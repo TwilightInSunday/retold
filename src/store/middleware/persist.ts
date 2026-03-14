@@ -1,6 +1,6 @@
 import type { StateCreator, StoreMutatorIdentifier } from 'zustand'
-import { putNote, putBoard, putSyncOp } from '../../db/operations'
-import type { Note, Board, SyncOperation } from '../../api/types'
+import type { Board, Note, SyncOperation } from '../../api/types'
+import { putBoard, putNote, putSyncOp } from '../../db/operations'
 
 type PersistImpl = <
   T,
@@ -13,39 +13,39 @@ type PersistImpl = <
 
 interface PersistConfig<T> {
   getEntities: (state: T) => {
-    notes?: Map<string, Note>;
-    boards?: Map<string, Board>;
-    syncOps?: SyncOperation[];
-  };
+    notes?: Map<string, Note>
+    boards?: Map<string, Board>
+    syncOps?: SyncOperation[]
+  }
 }
 
 const persistImpl: PersistImpl = (f, config) => (set, get, api) => {
   const wrappedSet = ((...args: unknown[]) => {
     // Apply state change
-    (set as (...a: unknown[]) => void)(...args);
+    ;(set as (...a: unknown[]) => void)(...args)
 
     // Write through to IndexedDB
-    const state = get();
-    const entities = config.getEntities(state);
+    const state = get()
+    const entities = config.getEntities(state)
 
     if (entities.notes) {
       for (const note of entities.notes.values()) {
-        putNote(note).catch(console.error);
+        putNote(note).catch(console.error)
       }
     }
     if (entities.boards) {
       for (const board of entities.boards.values()) {
-        putBoard(board).catch(console.error);
+        putBoard(board).catch(console.error)
       }
     }
     if (entities.syncOps) {
       for (const op of entities.syncOps) {
-        putSyncOp(op).catch(console.error);
+        putSyncOp(op).catch(console.error)
       }
     }
-  }) as typeof set;
+  }) as typeof set
 
-  return f(wrappedSet, get, api);
-};
+  return f(wrappedSet, get, api)
+}
 
-export const persistMiddleware = persistImpl as unknown as PersistImpl;
+export const persistMiddleware = persistImpl as unknown as PersistImpl

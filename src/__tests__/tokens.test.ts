@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { describe, expect, it } from 'vitest'
 
 describe('CSS Design Tokens', () => {
   const tokens = readFileSync(resolve(__dirname, '../styles/tokens.css'), 'utf-8')

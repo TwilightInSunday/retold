@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { TitleBar } from './components/shell/TitleBar'
-import { Toolbar } from './components/shell/Toolbar'
-import { StatusBar } from './components/shell/StatusBar'
-import { Canvas } from './components/board/Canvas'
-import { Note } from './components/board/Note'
-import { Zone, findOverlappingZone, snapToZone } from './components/board/Zone'
-import { useSyncStore } from './store/sync'
-import { useNotesStore } from './store/notes'
-import { useBoardStore } from './store/board'
-import { enqueueOperation } from './sync/queue'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { get, post } from './api/client'
 import { endpoints } from './api/endpoints'
-import type { Board, Zone as ZoneType, Note as NoteType } from './api/types'
+import type { Board, Note as NoteType, Zone as ZoneType } from './api/types'
+import { Canvas } from './components/board/Canvas'
+import { Note } from './components/board/Note'
+import { findOverlappingZone, snapToZone, Zone } from './components/board/Zone'
+import { StatusBar } from './components/shell/StatusBar'
+import { TitleBar } from './components/shell/TitleBar'
+import { Toolbar } from './components/shell/Toolbar'
+import { useBoardStore } from './store/board'
+import { useNotesStore } from './store/notes'
+import { useSyncStore } from './store/sync'
+import { enqueueOperation } from './sync/queue'
 import './App.css'
 import './styles/shell.css'
 import './styles/board.css'
@@ -79,7 +79,13 @@ function App() {
 
   // Drag state
   const [activeDropZoneId, setActiveDropZoneId] = useState<string | null>(null)
-  const dragging = useRef<{ id: string; startX: number; startY: number; noteX: number; noteY: number } | null>(null)
+  const dragging = useRef<{
+    id: string
+    startX: number
+    startY: number
+    noteX: number
+    noteY: number
+  } | null>(null)
 
   const handleDragStart = useCallback((id: string, e: React.PointerEvent) => {
     const note = useNotesStore.getState().getNote(id)
@@ -89,52 +95,58 @@ function App() {
     e.stopPropagation()
   }, [])
 
-  const handleDragMove = useCallback((id: string, e: React.PointerEvent) => {
-    if (!dragging.current || dragging.current.id !== id) return
-    e.stopPropagation()
-    const zoom = useBoardStore.getState().zoom
-    const dx = (e.clientX - dragging.current.startX) / zoom
-    const dy = (e.clientY - dragging.current.startY) / zoom
-    const newX = dragging.current.noteX + dx
-    const newY = dragging.current.noteY + dy
-    useNotesStore.getState().moveNote(id, newX, newY)
+  const handleDragMove = useCallback(
+    (id: string, e: React.PointerEvent) => {
+      if (!dragging.current || dragging.current.id !== id) return
+      e.stopPropagation()
+      const zoom = useBoardStore.getState().zoom
+      const dx = (e.clientX - dragging.current.startX) / zoom
+      const dy = (e.clientY - dragging.current.startY) / zoom
+      const newX = dragging.current.noteX + dx
+      const newY = dragging.current.noteY + dy
+      useNotesStore.getState().moveNote(id, newX, newY)
 
-    // Zone hover detection
-    const note = useNotesStore.getState().getNote(id)
-    if (note && responsiveZones.length > 0) {
-      const centerX = newX + note.width / 2
-      const centerY = newY + 60
-      const zone = findOverlappingZone(centerX, centerY, responsiveZones)
-      setActiveDropZoneId(zone?.id ?? null)
-    }
-  }, [responsiveZones])
+      // Zone hover detection
+      const note = useNotesStore.getState().getNote(id)
+      if (note && responsiveZones.length > 0) {
+        const centerX = newX + note.width / 2
+        const centerY = newY + 60
+        const zone = findOverlappingZone(centerX, centerY, responsiveZones)
+        setActiveDropZoneId(zone?.id ?? null)
+      }
+    },
+    [responsiveZones],
+  )
 
-  const handleDragEnd = useCallback((id: string, e: React.PointerEvent) => {
-    if (!dragging.current || dragging.current.id !== id) return
-    e.stopPropagation()
-    const note = useNotesStore.getState().getNote(id)
-    if (note && responsiveZones.length > 0) {
-      const centerX = note.x + note.width / 2
-      const centerY = note.y + 60
-      const zone = findOverlappingZone(centerX, centerY, responsiveZones)
-      if (zone) {
-        const snapped = snapToZone(note.x, note.y, note.width, zone)
-        useNotesStore.getState().moveNote(id, snapped.x, snapped.y)
-        const updates: Partial<NoteType> = { x: snapped.x, y: snapped.y }
-        if (zone.status) {
-          updates.status = zone.status
-          useNotesStore.getState().updateNote(id, { status: zone.status })
+  const handleDragEnd = useCallback(
+    (id: string, e: React.PointerEvent) => {
+      if (!dragging.current || dragging.current.id !== id) return
+      e.stopPropagation()
+      const note = useNotesStore.getState().getNote(id)
+      if (note && responsiveZones.length > 0) {
+        const centerX = note.x + note.width / 2
+        const centerY = note.y + 60
+        const zone = findOverlappingZone(centerX, centerY, responsiveZones)
+        if (zone) {
+          const snapped = snapToZone(note.x, note.y, note.width, zone)
+          useNotesStore.getState().moveNote(id, snapped.x, snapped.y)
+          const updates: Partial<NoteType> = { x: snapped.x, y: snapped.y }
+          if (zone.status) {
+            updates.status = zone.status
+            useNotesStore.getState().updateNote(id, { status: zone.status })
+          }
+          enqueueOperation('UPDATE', 'note', id, updates)
+        } else {
+          enqueueOperation('UPDATE', 'note', id, { x: note.x, y: note.y })
         }
-        enqueueOperation('UPDATE', 'note', id, updates)
-      } else {
+      } else if (note) {
         enqueueOperation('UPDATE', 'note', id, { x: note.x, y: note.y })
       }
-    } else if (note) {
-      enqueueOperation('UPDATE', 'note', id, { x: note.x, y: note.y })
-    }
-    setActiveDropZoneId(null)
-    dragging.current = null
-  }, [responsiveZones])
+      setActiveDropZoneId(null)
+      dragging.current = null
+    },
+    [responsiveZones],
+  )
 
   // Create note handler
   const handleNewNote = useCallback(() => {
@@ -161,9 +173,7 @@ function App() {
 
   // Get visible notes for current board
   const boardNotes = currentBoard
-    ? Array.from(notes.values()).filter(
-        (n) => n.boardId === currentBoard.id && !n.deletedAt
-      )
+    ? Array.from(notes.values()).filter((n) => n.boardId === currentBoard.id && !n.deletedAt)
     : []
 
   return (
@@ -172,11 +182,7 @@ function App() {
       <Toolbar onNewNote={handleNewNote} onResetView={resetViewport} />
       <Canvas>
         {responsiveZones.map((zone) => (
-          <Zone
-            key={zone.id}
-            zone={zone}
-            isDropTarget={activeDropZoneId === zone.id}
-          />
+          <Zone key={zone.id} zone={zone} isDropTarget={activeDropZoneId === zone.id} />
         ))}
         {boardNotes.map((note) => (
           <Note

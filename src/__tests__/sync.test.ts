@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach, beforeAll, afterAll, afterEach } from 'vitest'
-import { useSyncStore } from '../store/sync'
-import { enqueueOperation, drainQueue } from '../sync/queue'
-import { getBackoffDelay } from '../sync/engine'
-import { resolveNoteConflict, mergeNotes } from '../sync/conflict'
-import { server } from '../mocks/server'
-import { db } from '../mocks/db'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import type { Note } from '../api/types'
+import { db } from '../mocks/db'
+import { server } from '../mocks/server'
+import { useSyncStore } from '../store/sync'
+import { mergeNotes, resolveNoteConflict } from '../sync/conflict'
+import { getBackoffDelay } from '../sync/engine'
+import { drainQueue, enqueueOperation } from '../sync/queue'
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -16,7 +16,7 @@ afterAll(() => server.close())
 
 describe('Sync Queue', () => {
   beforeEach(() => {
-    useSyncStore.setState({ queue: [], status: 'idle', lastSyncedAt: null });
+    useSyncStore.setState({ queue: [], status: 'idle', lastSyncedAt: null })
   })
 
   it('enqueues operations', () => {
@@ -28,8 +28,15 @@ describe('Sync Queue', () => {
 
   it('drains queue successfully', async () => {
     enqueueOperation('CREATE', 'note', 'n1', {
-      id: 'n1', boardId: 'b1', text: 'Hi', status: 'todo', color: 'yellow',
-      x: 0, y: 0, width: 160, rotation: 0,
+      id: 'n1',
+      boardId: 'b1',
+      text: 'Hi',
+      status: 'todo',
+      color: 'yellow',
+      x: 0,
+      y: 0,
+      width: 160,
+      rotation: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       deletedAt: null,
@@ -63,8 +70,15 @@ describe('Backoff', () => {
 
 describe('Conflict Resolution', () => {
   const baseNote: Note = {
-    id: 'n1', boardId: 'b1', text: 'Original', status: 'todo', color: 'yellow',
-    x: 0, y: 0, width: 160, rotation: 0,
+    id: 'n1',
+    boardId: 'b1',
+    text: 'Original',
+    status: 'todo',
+    color: 'yellow',
+    x: 0,
+    y: 0,
+    width: 160,
+    rotation: 0,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
     deletedAt: null,
@@ -95,9 +109,7 @@ describe('Conflict Resolution', () => {
     const local = new Map<string, Note>()
     local.set('n1', baseNote)
 
-    const serverNotes = [
-      { ...baseNote, id: 'n2', text: 'New from server' },
-    ]
+    const serverNotes = [{ ...baseNote, id: 'n2', text: 'New from server' }]
 
     const merged = mergeNotes(local, serverNotes)
     expect(merged.size).toBe(2)
@@ -108,9 +120,7 @@ describe('Conflict Resolution', () => {
     const local = new Map<string, Note>()
     local.set('n1', { ...baseNote, text: 'Local edit', updatedAt: '2024-01-02T00:00:00Z' })
 
-    const serverNotes = [
-      { ...baseNote, text: 'Server edit', updatedAt: '2024-01-01T00:00:00Z' },
-    ]
+    const serverNotes = [{ ...baseNote, text: 'Server edit', updatedAt: '2024-01-01T00:00:00Z' }]
 
     const merged = mergeNotes(local, serverNotes)
     expect(merged.get('n1')?.text).toBe('Local edit')

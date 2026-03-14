@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import { CreateButton } from '../components/board/CreateButton'
+import { StatusBar } from '../components/shell/StatusBar'
 import { TitleBar } from '../components/shell/TitleBar'
 import { Toolbar } from '../components/shell/Toolbar'
-import { StatusBar } from '../components/shell/StatusBar'
-import { CreateButton } from '../components/board/CreateButton'
 
 describe('Responsive layout components', () => {
   it('TitleBar renders at any viewport', () => {

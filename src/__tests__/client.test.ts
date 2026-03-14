@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { get, post, put, patch, del, ApiError } from '../api/client'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ApiError, del, get, patch, post, put } from '../api/client'
 
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)
@@ -20,7 +20,12 @@ describe('API client', () => {
     mockFetch.mockResolvedValue(jsonResponse({ id: '1' }))
     const result = await get('/api/test')
     expect(result).toEqual({ id: '1' })
-    expect(mockFetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({ headers: expect.objectContaining({ 'Content-Type': 'application/json' }) }))
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/test',
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+      }),
+    )
   })
 
   it('POST sends body and returns JSON', async () => {

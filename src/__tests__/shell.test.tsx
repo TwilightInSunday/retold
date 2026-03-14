@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { StatusBar } from '../components/shell/StatusBar'
 import { TitleBar } from '../components/shell/TitleBar'
 import { Toolbar } from '../components/shell/Toolbar'
-import { StatusBar } from '../components/shell/StatusBar'
 
 describe('TitleBar', () => {
   it('renders default title', () => {
@@ -59,8 +59,13 @@ function makeNote(overrides: Record<string, unknown> = {}) {
     text: '',
     status: 'inbox',
     color: 'yellow',
-    x: 0, y: 0, width: 160, rotation: 0,
-    createdAt: '', updatedAt: '', deletedAt: null,
+    x: 0,
+    y: 0,
+    width: 160,
+    rotation: 0,
+    createdAt: '',
+    updatedAt: '',
+    deletedAt: null,
     ...overrides,
   }
 }

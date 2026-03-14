@@ -29,10 +29,6 @@
   opacity: 0.6;
 }
 
-.note--done .note__text {
-  text-decoration: line-through;
-}
-
 /* Note header */
 .note__header {
   display: flex;
@@ -116,8 +112,12 @@
   color: var(--retro-black);
 }
 
+.note--done .note__text {
+  text-decoration: line-through;
+}
+
 .note__text:empty::before {
-  content: 'Double-click to edit';
+  content: "Double-click to edit";
   color: var(--retro-mid);
   font-style: italic;
 }
@@ -235,7 +235,9 @@
 
 .color-picker__swatch--active {
   border: var(--border-thick);
-  box-shadow: 0 0 0 2px var(--retro-white), 0 0 0 4px var(--retro-black);
+  box-shadow:
+    0 0 0 2px var(--retro-white),
+    0 0 0 4px var(--retro-black);
 }
 
 .checkbox {

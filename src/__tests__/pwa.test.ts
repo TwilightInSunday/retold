@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { describe, expect, it } from 'vitest'
 
 describe('PWA', () => {
   it('manifest.json exists and is valid JSON', () => {
     const manifest = JSON.parse(
-      readFileSync(resolve(__dirname, '../../public/manifest.json'), 'utf-8')
+      readFileSync(resolve(__dirname, '../../public/manifest.json'), 'utf-8'),
     )
     expect(manifest.name).toBe('RETRO.DO')
     expect(manifest.display).toBe('standalone')
@@ -15,7 +15,7 @@ describe('PWA', () => {
 
   it('manifest has required PWA fields', () => {
     const manifest = JSON.parse(
-      readFileSync(resolve(__dirname, '../../public/manifest.json'), 'utf-8')
+      readFileSync(resolve(__dirname, '../../public/manifest.json'), 'utf-8'),
     )
     expect(manifest).toHaveProperty('name')
     expect(manifest).toHaveProperty('short_name')

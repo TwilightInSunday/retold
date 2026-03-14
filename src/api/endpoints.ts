@@ -1,4 +1,4 @@
-const BASE = '/api';
+const BASE = '/api'
 
 export const endpoints = {
   boards: {
@@ -20,4 +20,4 @@ export const endpoints = {
     push: () => `${BASE}/sync/push`,
     pull: (since: string) => `${BASE}/sync/pull?since=${encodeURIComponent(since)}`,
   },
-} as const;
+} as const

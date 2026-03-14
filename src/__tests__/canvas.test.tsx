@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Canvas } from '../components/board/Canvas'
 
 describe('Canvas', () => {
@@ -12,7 +12,7 @@ describe('Canvas', () => {
     render(
       <Canvas>
         <div data-testid="child">Hello</div>
-      </Canvas>
+      </Canvas>,
     )
     expect(screen.getByTestId('child')).toBeInTheDocument()
   })

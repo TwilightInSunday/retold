@@ -1,58 +1,58 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { useNotesStore } from '../store/notes'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Note } from '../api/types'
 import { Checkbox } from '../components/shared/Checkbox'
 import { ColorPicker } from '../components/shared/ColorPicker'
-import type { Note } from '../api/types'
+import { useNotesStore } from '../store/notes'
 
 const validTransitions: Record<Note['status'], Note['status'][]> = {
   inbox: ['todo'],
   todo: ['in-progress'],
   'in-progress': ['done', 'todo'],
   done: ['todo'],
-};
+}
 
 function canTransition(from: Note['status'], to: Note['status']): boolean {
-  return validTransitions[from]?.includes(to) ?? false;
+  return validTransitions[from]?.includes(to) ?? false
 }
 
 describe('Note status transitions', () => {
   beforeEach(() => {
-    useNotesStore.setState({ notes: new Map() });
+    useNotesStore.setState({ notes: new Map() })
   })
 
   it('inbox → todo on first edit', () => {
-    expect(canTransition('inbox', 'todo')).toBe(true);
+    expect(canTransition('inbox', 'todo')).toBe(true)
   })
 
   it('todo → in-progress', () => {
-    expect(canTransition('todo', 'in-progress')).toBe(true);
+    expect(canTransition('todo', 'in-progress')).toBe(true)
   })
 
   it('in-progress → done', () => {
-    expect(canTransition('in-progress', 'done')).toBe(true);
+    expect(canTransition('in-progress', 'done')).toBe(true)
   })
 
   it('done → todo (reopen)', () => {
-    expect(canTransition('done', 'todo')).toBe(true);
+    expect(canTransition('done', 'todo')).toBe(true)
   })
 
   it('inbox cannot go directly to done', () => {
-    expect(canTransition('inbox', 'done')).toBe(false);
+    expect(canTransition('inbox', 'done')).toBe(false)
   })
 
   it('store transitions inbox to todo on text update', () => {
-    const note = useNotesStore.getState().createNote('b1', 0, 0);
-    expect(note.status).toBe('inbox');
+    const note = useNotesStore.getState().createNote('b1', 0, 0)
+    expect(note.status).toBe('inbox')
 
     useNotesStore.getState().updateNote(note.id, {
       text: 'Hello',
       status: 'todo',
-    });
+    })
 
-    const updated = useNotesStore.getState().getNote(note.id);
-    expect(updated?.status).toBe('todo');
-    expect(updated?.text).toBe('Hello');
+    const updated = useNotesStore.getState().getNote(note.id)
+    expect(updated?.status).toBe('todo')
+    expect(updated?.text).toBe('Hello')
   })
 })
 

@@ -1,9 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import type { Note as NoteType } from '../api/types'
+import { CreateButton } from '../components/board/CreateButton'
 import { Note } from '../components/board/Note'
 import { NoteEditor } from '../components/board/NoteEditor'
-import { CreateButton } from '../components/board/CreateButton'
-import type { Note as NoteType } from '../api/types'
 
 const baseNote: NoteType = {
   id: 'n1',

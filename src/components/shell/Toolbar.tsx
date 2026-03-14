@@ -1,16 +1,17 @@
 import { useState } from 'react'
 
 interface ToolbarProps {
-  onNewNote?: () => void;
-  onResetView?: () => void;
+  onNewNote?: () => void
+  onResetView?: () => void
 }
 
 export function Toolbar({ onNewNote, onResetView }: ToolbarProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <div className="toolbar" role="toolbar" aria-label="Board tools">
       <button
+        type="button"
         className="toolbar__hamburger"
         aria-label="Toggle menu"
         aria-expanded={menuOpen}
@@ -21,14 +22,11 @@ export function Toolbar({ onNewNote, onResetView }: ToolbarProps) {
         <span className="toolbar__hamburger-line" />
       </button>
       <div className={`toolbar__actions ${menuOpen ? 'toolbar__actions--open' : ''}`}>
-        <button
-          className="toolbar__btn"
-          onClick={onNewNote}
-          aria-label="New note"
-        >
+        <button type="button" className="toolbar__btn" onClick={onNewNote} aria-label="New note">
           + Note
         </button>
         <button
+          type="button"
           className="toolbar__btn"
           onClick={onResetView}
           aria-label="Reset view"
@@ -37,5 +35,5 @@ export function Toolbar({ onNewNote, onResetView }: ToolbarProps) {
         </button>
       </div>
     </div>
-  );
+  )
 }

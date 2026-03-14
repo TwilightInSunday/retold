@@ -1,13 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
-import { Note } from '../components/board/Note'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import type { Note as NoteType } from '../api/types'
 import { Canvas } from '../components/board/Canvas'
+import { Note } from '../components/board/Note'
+import { Checkbox } from '../components/shared/Checkbox'
+import { ColorPicker } from '../components/shared/ColorPicker'
+import { StatusBar } from '../components/shell/StatusBar'
 import { TitleBar } from '../components/shell/TitleBar'
 import { Toolbar } from '../components/shell/Toolbar'
-import { StatusBar } from '../components/shell/StatusBar'
-import { ColorPicker } from '../components/shared/ColorPicker'
-import { Checkbox } from '../components/shared/Checkbox'
-import type { Note as NoteType } from '../api/types'
 
 const testNote: NoteType = {
   id: 'n1',
@@ -15,7 +15,8 @@ const testNote: NoteType = {
   text: 'Accessible note',
   status: 'todo',
   color: 'yellow',
-  x: 0, y: 0,
+  x: 0,
+  y: 0,
   width: 160,
   rotation: 0,
   createdAt: '',

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest'
-import { server } from '../mocks/server'
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { db } from '../mocks/db'
+import { server } from '../mocks/server'
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -144,7 +144,8 @@ describe('MSW Mock API', () => {
               text: 'Synced',
               status: 'todo',
               color: 'yellow',
-              x: 0, y: 0,
+              x: 0,
+              y: 0,
               width: 160,
               rotation: 0,
               createdAt: new Date().toISOString(),

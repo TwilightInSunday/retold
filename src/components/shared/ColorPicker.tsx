@@ -1,8 +1,8 @@
 import type { Note } from '../../api/types'
 
 interface ColorPickerProps {
-  value: Note['color'];
-  onChange: (color: Note['color']) => void;
+  value: Note['color']
+  onChange: (color: Note['color']) => void
 }
 
 const COLORS: { value: Note['color']; label: string; css: string }[] = [
@@ -11,13 +11,15 @@ const COLORS: { value: Note['color']; label: string; css: string }[] = [
   { value: 'blue', label: 'Blue', css: 'var(--note-blue)' },
   { value: 'green', label: 'Green', css: 'var(--note-green)' },
   { value: 'white', label: 'White', css: 'var(--note-white)' },
-];
+]
 
 export function ColorPicker({ value, onChange }: ColorPickerProps) {
   return (
     <div className="color-picker" role="radiogroup" aria-label="Note color">
       {COLORS.map((color) => (
+        // biome-ignore lint/a11y/useSemanticElements: intentional radio group pattern with buttons
         <button
+          type="button"
           key={color.value}
           className={`color-picker__swatch ${value === color.value ? 'color-picker__swatch--active' : ''}`}
           style={{ backgroundColor: color.css }}
@@ -28,5 +30,5 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
         />
       ))}
     </div>
-  );
+  )
 }
