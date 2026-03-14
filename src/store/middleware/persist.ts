@@ -20,7 +20,7 @@ interface PersistConfig<T> {
 }
 
 const persistImpl: PersistImpl = (f, config) => (set, get, api) => {
-  const wrappedSet: typeof set = (...args) => {
+  const wrappedSet = ((...args: unknown[]) => {
     // Apply state change
     (set as (...a: unknown[]) => void)(...args);
 
@@ -43,7 +43,7 @@ const persistImpl: PersistImpl = (f, config) => (set, get, api) => {
         putSyncOp(op).catch(console.error);
       }
     }
-  };
+  }) as typeof set;
 
   return f(wrappedSet, get, api);
 };

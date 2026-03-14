@@ -1,4 +1,4 @@
-import { useState, useEffect, useSyncExternalStore, useCallback } from 'react'
+import { useSyncExternalStore } from 'react'
 
 function subscribe(callback: () => void) {
   window.addEventListener('online', callback);

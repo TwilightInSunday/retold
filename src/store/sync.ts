@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { nanoid } from 'nanoid'
-import type { SyncOperation, Note, Board } from '../api/types'
+import type { SyncOperation } from '../api/types'
 
 export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'error';
 
