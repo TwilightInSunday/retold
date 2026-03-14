@@ -1,6 +1,5 @@
+import { nanoid } from 'nanoid'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { get, post } from './api/client'
-import { endpoints } from './api/endpoints'
 import type { Board, Note as NoteType, Zone as ZoneType } from './api/types'
 import { Canvas } from './components/board/Canvas'
 import { Note } from './components/board/Note'
@@ -8,6 +7,7 @@ import { findOverlappingZone, snapToZone, Zone } from './components/board/Zone'
 import { StatusBar } from './components/shell/StatusBar'
 import { TitleBar } from './components/shell/TitleBar'
 import { Toolbar } from './components/shell/Toolbar'
+import { getAllBoards, getNotesByBoard, putBoard, putNote } from './db/operations'
 import { useBoardStore } from './store/board'
 import { useNotesStore } from './store/notes'
 import { useSyncStore } from './store/sync'
@@ -15,6 +15,22 @@ import { enqueueOperation } from './sync/queue'
 import './App.css'
 import './styles/shell.css'
 import './styles/board.css'
+
+const DEFAULT_ZONES: ZoneType[] = (() => {
+  const statuses: ZoneType['status'][] = ['inbox', 'todo', 'in-progress', 'done']
+  const labels = ['Inbox', 'Todo', 'In Progress', 'Done']
+  const colors = ['#888888', '#3b82f6', '#f59e0b', '#22c55e']
+  return statuses.map((status, i) => ({
+    id: `zone-${status}`,
+    label: labels[i],
+    status,
+    x: 20 + i * 300,
+    y: 0,
+    width: 280,
+    height: 500,
+    color: colors[i],
+  }))
+})()
 
 function App() {
   const syncStatus = useSyncStore((s) => s.status)
@@ -52,26 +68,29 @@ function App() {
     }))
   }, [currentBoard?.zones, viewportSize])
 
-  // Initialize board on mount
+  // Initialize board from IndexedDB on mount
   useEffect(() => {
     async function init() {
-      try {
-        const boards = await get<Board[]>(endpoints.boards.list())
-        let board: Board
-        if (boards.length === 0) {
-          board = await post<Board>(endpoints.boards.create(), { name: 'My Board' })
-        } else {
-          board = boards[0]
+      const boards = await getAllBoards()
+      let board: Board
+      if (boards.length === 0) {
+        const now = new Date().toISOString()
+        board = {
+          id: nanoid(),
+          name: 'My Board',
+          zones: DEFAULT_ZONES,
+          createdAt: now,
+          updatedAt: now,
         }
-        useBoardStore.getState().setBoards([board])
+        await putBoard(board)
+      } else {
+        board = boards[0]
+      }
+      useBoardStore.getState().setBoards([board])
 
-        // Fetch existing notes
-        const existingNotes = await get<NoteType[]>(endpoints.notes.list(board.id))
-        if (existingNotes.length > 0) {
-          useNotesStore.getState().setNotes(existingNotes)
-        }
-      } catch (e) {
-        console.warn('Failed to initialize board:', e)
+      const existingNotes = await getNotesByBoard(board.id)
+      if (existingNotes.length > 0) {
+        useNotesStore.getState().setNotes(existingNotes)
       }
     }
     init()
@@ -139,8 +158,11 @@ function App() {
         } else {
           enqueueOperation('UPDATE', 'note', id, { x: note.x, y: note.y })
         }
+        const movedNote = useNotesStore.getState().getNote(id)
+        if (movedNote) putNote(movedNote)
       } else if (note) {
         enqueueOperation('UPDATE', 'note', id, { x: note.x, y: note.y })
+        putNote(note)
       }
       setActiveDropZoneId(null)
       dragging.current = null
@@ -156,18 +178,23 @@ function App() {
     const x = -panX + window.innerWidth / 2 - 80 + offsetX
     const y = -panY + window.innerHeight / 2 - 60 + offsetY
     const note = useNotesStore.getState().createNote(currentBoard.id, x, y)
+    putNote(note)
     enqueueOperation('CREATE', 'note', note.id, note)
   }, [currentBoard, panX, panY])
 
   // Update note handler
   const handleUpdateNote = useCallback((id: string, updates: Partial<NoteType>) => {
     useNotesStore.getState().updateNote(id, updates)
+    const updatedNote = useNotesStore.getState().getNote(id)
+    if (updatedNote) putNote(updatedNote)
     enqueueOperation('UPDATE', 'note', id, updates)
   }, [])
 
   // Delete note handler
   const handleDeleteNote = useCallback((id: string) => {
     useNotesStore.getState().deleteNote(id)
+    const deletedNote = useNotesStore.getState().getNote(id)
+    if (deletedNote) putNote(deletedNote)
     enqueueOperation('DELETE', 'note', id, {})
   }, [])
 
