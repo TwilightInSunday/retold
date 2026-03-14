@@ -9,7 +9,7 @@ describe('PWA', () => {
     )
     expect(manifest.name).toBe('RETRO.DO')
     expect(manifest.display).toBe('standalone')
-    expect(manifest.start_url).toBe('/')
+    expect(manifest.start_url).toBe('/retold/')
     expect(manifest.icons).toHaveLength(2)
   })
 

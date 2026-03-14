@@ -2,7 +2,7 @@
   "name": "RETRO.DO",
   "short_name": "RETRO.DO",
   "description": "A spatial todo app with whiteboard/post-it UX",
-  "start_url": "/",
+  "start_url": "/retold/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#1a1a1a",
@@ -10,12 +10,12 @@
   "categories": ["productivity"],
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/retold/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/retold/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
